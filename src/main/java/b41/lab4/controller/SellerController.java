@@ -3,11 +3,12 @@ package b41.lab4.controller;
 import b41.lab4.data.nosql.Seller;
 import b41.lab4.exception.ResourceNotFoundException;
 import b41.lab4.repository.nosql.SellerRepository;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-// @TODO: повертати ResponseEntity зі статус кодами та відповідним Seller як результат усіх запитів
 @RestController
 @RequestMapping("/api/sellers")
 public class SellerController {
@@ -18,40 +19,53 @@ public class SellerController {
     }
 
     @GetMapping
-    public List<Seller> getAllSellers() {
-        return sellerRepository.findAll();
+    public ResponseEntity<List<Seller>> getAllSellers() {
+        List<Seller> sellers = sellerRepository.findAll();
+        return new ResponseEntity<>(sellers, HttpStatus.OK);
     }
 
     @GetMapping("/filter")
-    public List<Seller> filterSellers(@RequestParam String region) {
-        return sellerRepository.findByRegion(region);
+    public ResponseEntity<List<Seller>> filterSellers(@RequestParam String region) {
+        List<Seller> sellers = sellerRepository.findByRegion(region);
+        return new ResponseEntity<>(sellers, HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
-    public Seller getSellerById(@PathVariable String id) {
-        return sellerRepository.findById(id)
+    public ResponseEntity<Seller> getSellerById(@PathVariable String id) {
+        Seller seller = sellerRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Seller not found"));
+        return new ResponseEntity<>(seller, HttpStatus.OK);
     }
 
     @PostMapping
-    public Seller createSeller(@RequestBody Seller seller) {
-        // @TODO: додати перевірку, чи продавець вже існує
-        return sellerRepository.save(seller);
+    public ResponseEntity<Seller> createSeller(@RequestBody Seller seller) {
+        // Перевірка, чи продавець вже існує
+        boolean exists = sellerRepository.existsById(seller.getId());
+        if (exists) {
+            return new ResponseEntity<>(HttpStatus.CONFLICT); // Конфлікт, якщо продавець вже існує
+        }
+        Seller savedSeller = sellerRepository.save(seller);
+        return new ResponseEntity<>(savedSeller, HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
-    public Seller updateSeller(@PathVariable String id, @RequestBody Seller updatedSeller) {
+    public ResponseEntity<Seller> updateSeller(@PathVariable String id, @RequestBody Seller updatedSeller) {
         Seller seller = sellerRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Seller not found"));
         seller.setName(updatedSeller.getName());
         seller.setAge(updatedSeller.getAge());
         seller.setGender(updatedSeller.getGender());
         seller.setRegion(updatedSeller.getRegion());
-        return sellerRepository.save(seller);
+        Seller savedSeller = sellerRepository.save(seller);
+        return new ResponseEntity<>(savedSeller, HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")
-    public void deleteSeller(@PathVariable String id) {
+    public ResponseEntity<Void> deleteSeller(@PathVariable String id) {
+        if (!sellerRepository.existsById(id)) {
+            throw new ResourceNotFoundException("Seller not found");
+        }
         sellerRepository.deleteById(id);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }
