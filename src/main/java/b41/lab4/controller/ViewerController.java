@@ -3,11 +3,12 @@ package b41.lab4.controller;
 import b41.lab4.data.Viewer;
 import b41.lab4.exception.ResourceNotFoundException;
 import b41.lab4.repository.ViewerRepository;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-// @TODO: повертати ResponseEntity зі статус кодами та відповідним Viewer як результат усіх запитів
 @RestController
 @RequestMapping("/api/viewers")
 public class ViewerController {
@@ -18,33 +19,43 @@ public class ViewerController {
     }
 
     @GetMapping
-    public List<Viewer> getAllViewers() {
-        return viewerRepository.findAll();
+    public ResponseEntity<List<Viewer>> getAllViewers() {
+        List<Viewer> viewers = viewerRepository.findAll();
+        return new ResponseEntity<>(viewers, HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
-    public Viewer getViewerById(@PathVariable Long id) {
-        return viewerRepository.findById(id)
+    public ResponseEntity<Viewer> getViewerById(@PathVariable Long id) {
+        Viewer viewer = viewerRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Viewer not found"));
+        return new ResponseEntity<>(viewer, HttpStatus.OK);
     }
 
     @PostMapping
-    public Viewer createViewer(@RequestBody Viewer viewer) {
-        return viewerRepository.save(viewer);
+    public ResponseEntity<Viewer> createViewer(@RequestBody Viewer viewer) {
+        Viewer savedViewer = viewerRepository.save(viewer);
+        return new ResponseEntity<>(savedViewer, HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
-    public Viewer updateViewer(@PathVariable Long id, @RequestBody Viewer updatedViewer) {
+    public ResponseEntity<Viewer> updateViewer(@PathVariable Long id, @RequestBody Viewer updatedViewer) {
         Viewer viewer = viewerRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Viewer not found"));
+
         viewer.setName(updatedViewer.getName());
         viewer.setAge(updatedViewer.getAge());
         viewer.setGender(updatedViewer.getGender());
-        return viewerRepository.save(viewer);
+
+        Viewer savedViewer = viewerRepository.save(viewer);
+        return new ResponseEntity<>(savedViewer, HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")
-    public void deleteViewer(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteViewer(@PathVariable Long id) {
+        if (!viewerRepository.existsById(id)) {
+            throw new ResourceNotFoundException("Viewer not found");
+        }
         viewerRepository.deleteById(id);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }

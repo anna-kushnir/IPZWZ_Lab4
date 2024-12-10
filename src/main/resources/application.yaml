@@ -14,7 +14,7 @@ spring:
 
   data:
     mongodb:
-      uri: 'mongodb://root:password@mongo_db:27017/mydb?authSource=admin'
+      uri: 'mongodb://root:password@mongodb:27017/mydb?authSource=admin'
 
   flyway:
     enabled: true
