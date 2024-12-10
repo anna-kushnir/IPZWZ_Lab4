@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Orders Table</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<h1>Order Management</h1>
+
+<div class="filter">
+    <label for="filterStartDate">Start Date:</label>
+    <input type="date" id="filterStartDate">
+
+    <label for="filterEndDate">End Date:</label>
+    <input type="date" id="filterEndDate">
+
+    <button onclick="filterOrders()">Filter</button>
+</div>
+
+<table id="ordersTable">
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>Viewer</th>
+        <th>Ticket</th>
+        <th>Order Date</th>
+    </tr>
+    </thead>
+    <tbody>
+
+    </tbody>
+</table>
+
+<script src="app.js"></script>
+</body>
+</html>
