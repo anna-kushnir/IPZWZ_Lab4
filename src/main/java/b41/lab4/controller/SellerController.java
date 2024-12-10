@@ -39,7 +39,6 @@ public class SellerController {
 
     @PostMapping
     public ResponseEntity<Seller> createSeller(@RequestBody Seller seller) {
-        // Перевірка, чи продавець вже існує
         boolean exists = sellerRepository.existsById(seller.getId());
         if (exists) {
             return new ResponseEntity<>(HttpStatus.CONFLICT); // Конфлікт, якщо продавець вже існує
