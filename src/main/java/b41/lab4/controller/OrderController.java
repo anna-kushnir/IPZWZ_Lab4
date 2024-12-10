@@ -58,7 +58,12 @@ public class OrderController {
         order.setViewer(viewer);
         order.setTicket(ticket);
 
-        Order savedOrder = orderRepository.save(order);
+        Order savedOrder;
+        try {
+            savedOrder = orderRepository.save(order);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
         return new ResponseEntity<>(savedOrder, HttpStatus.CREATED);
     }
 
@@ -70,7 +75,12 @@ public class OrderController {
         order.setViewer(updatedOrder.getViewer());
         order.setTicket(updatedOrder.getTicket());
         order.setOrderDate(updatedOrder.getOrderDate());
-        Order savedOrder = orderRepository.save(order);
+        Order savedOrder;
+        try {
+            savedOrder = orderRepository.save(order);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
         return new ResponseEntity<>(savedOrder, HttpStatus.OK);
     }
 
