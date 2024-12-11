@@ -80,7 +80,6 @@ public class OrderController {
 
         order.setViewer(viewer);
         order.setTicket(ticket);
-        order.setOrderDate(updatedOrder.getOrderDate());
         Order savedOrder;
         try {
             savedOrder = orderRepository.save(order);
