@@ -72,8 +72,14 @@ public class OrderController {
     public ResponseEntity<Order> updateOrder(@PathVariable Long id, @RequestBody Order updatedOrder) {
         Order order = orderRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Order not found"));
-        order.setViewer(updatedOrder.getViewer());
-        order.setTicket(updatedOrder.getTicket());
+        Viewer viewer = viewerRepository.findById(updatedOrder.getViewer().getId())
+                .orElseThrow(() -> new ResourceNotFoundException("Viewer not found"));
+
+        Ticket ticket = ticketRepository.findById(updatedOrder.getTicket().getId())
+                .orElseThrow(() -> new ResourceNotFoundException("Ticket not found"));
+
+        order.setViewer(viewer);
+        order.setTicket(ticket);
         order.setOrderDate(updatedOrder.getOrderDate());
         Order savedOrder;
         try {
